@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<title>DigiSpace Recruiting Report</title>
+<meta name="description" content="Der DigiSpace Recruiting Report zum Durchblättern. Die 4 Bausteine der PUZZLE-Methode und 7 Fallstudien.">
+<meta property="og:title" content="DigiSpace Recruiting Report">
+<meta property="og:description" content="Die 4 Bausteine der PUZZLE-Methode und 7 Fallstudien zum Durchblättern.">
+<meta property="og:image" content="seiten/s01.webp">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1d1d1f">
+<link rel="icon" href="mini/m01.webp">
+<link rel="preload" href="fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Manrope';font-style:normal;font-display:swap;font-weight:200 800;src:url(fonts/manrope-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Manrope';font-style:normal;font-display:swap;font-weight:200 800;src:url(fonts/manrope-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+</style>
+<link rel="preload" as="image" href="seiten/s01.webp">
+<style>
+:root{
+  --ink:#1d1d1f; --paper:#efece4;
+  --gold-1:#b88d63; --gold-2:#ffcc99;
+  --ui:rgba(255,255,255,.13); --ui-hover:rgba(255,255,255,.24);
+  --leiste:54px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Manrope',system-ui,sans-serif;
+  background:radial-gradient(130% 130% at 50% -10%, #34343a 0%, #1b1b1d 55%, #0d0d0e 100%);
+  color:#f5f2ea;overflow:hidden;overscroll-behavior:none;
+}
+#buehne{position:fixed;inset:0}
+
+/* Kopfzeile schwebt über dem Buch und braucht keinen Platz */
+#kopf{
+  position:absolute;top:0;left:0;right:0;z-index:30;
+  padding:max(8px,env(safe-area-inset-top)) 12px 26px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  background:linear-gradient(180deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.28) 55%,transparent 100%);
+  transition:opacity .35s, transform .35s;pointer-events:none;
+}
+#kopf > *{pointer-events:auto}
+.titel{font-size:13px;font-weight:800;letter-spacing:.01em;opacity:.92;padding-top:11px}
+.titel span{background:linear-gradient(90deg,var(--gold-1),var(--gold-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.werkzeuge{display:flex;gap:7px}
+
+/* Buch nimmt fast die ganze Fläche ein */
+#rahmen{
+  position:absolute;inset:0;
+  padding:calc(env(safe-area-inset-top) + 6px) 6px calc(env(safe-area-inset-bottom) + var(--leiste));
+  display:flex;align-items:center;justify-content:center;
+}
+#buch{width:100%;height:100%;touch-action:pan-y;filter:drop-shadow(0 24px 40px rgba(0,0,0,.55))}
+#buch .seite{background:var(--paper);overflow:hidden}
+#buch .seite img{width:100%;height:100%;display:block;object-fit:contain;background:var(--paper)}
+#buch .seite.hart{background:var(--ink)}
+/* Die Bibliothek setzt 2000px Perspektive. Damit wächst Cover und Rückseite beim Umschlagen um ein Drittel
+   und ragt oben aus dem Buch. Flachere Perspektive: kaum Wachstum, das Blatt bleibt an seinem Platz. */
+#buch .stf__block{perspective:20000px !important}
+
+/* Fußzeile */
+#fuss{
+  position:absolute;left:0;right:0;bottom:0;z-index:30;
+  padding:8px 12px max(8px,env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(0deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.3) 60%,transparent 100%);
+  transition:opacity .35s, transform .35s;pointer-events:none;
+}
+#fuss > *{pointer-events:auto}
+
+.knopf{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-width:46px;height:46px;padding:0 14px;border:none;border-radius:999px;
+  background:var(--ui);color:#fff;font:inherit;font-size:14px;font-weight:700;
+  cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:background .18s, transform .12s, opacity .2s;text-decoration:none;
+}
+.knopf:hover{background:var(--ui-hover)}
+.knopf:active{transform:scale(.93)}
+.knopf:disabled{opacity:.28;cursor:default}
+.knopf svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.knopf.gross{height:52px;min-width:52px}
+#stand{min-width:96px;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+
+/* Miniaturen */
+#leiste{
+  position:absolute;left:0;right:0;bottom:0;z-index:40;
+  background:rgba(14,14,15,.94);backdrop-filter:blur(16px);
+  padding:14px 14px max(14px,env(safe-area-inset-bottom));
+  transform:translateY(105%);transition:transform .34s cubic-bezier(.32,.72,0,1);
+}
+#leiste.auf{transform:translateY(0)}
+#leiste-innen{display:flex;gap:9px;overflow-x:auto;padding-bottom:6px;scroll-behavior:smooth}
+#leiste-innen figure{flex:none;text-align:center;cursor:pointer}
+#leiste-innen img{
+  height:104px;width:auto;border-radius:3px;opacity:.5;display:block;
+  border:2px solid transparent;transition:opacity .2s,border-color .2s,transform .2s;
+}
+#leiste-innen figure:hover img{opacity:.92;transform:translateY(-2px)}
+#leiste-innen figure.aktiv img{opacity:1;border-color:var(--gold-1)}
+#leiste-innen figcaption{font-size:11px;opacity:.55;margin-top:5px;font-weight:700}
+
+/* Zoomansicht */
+#lupe{
+  position:fixed;inset:0;z-index:60;display:none;background:rgba(10,10,11,.985);
+  touch-action:none;opacity:0;transition:opacity .28s ease;
+}
+#lupe.auf{display:block}
+#lupe.sichtbar{opacity:1}
+#lupe-buehne{position:absolute;inset:0;overflow:hidden}
+#lupe-bild{
+  position:absolute;top:50%;left:50%;transform-origin:center center;
+  will-change:transform;max-width:none;box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+#lupe-kopf{
+  position:absolute;top:0;left:0;right:0;z-index:62;
+  padding:max(10px,env(safe-area-inset-top)) 14px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(180deg,rgba(0,0,0,.6),transparent);
+}
+#lupe-fuss{
+  position:absolute;left:0;right:0;bottom:0;z-index:62;
+  padding:10px 14px max(10px,env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);
+}
+
+
+/* Textansicht: der Report als Artikel, in frei wählbarer Schriftgröße */
+#text{
+  position:fixed;inset:0;z-index:70;display:none;
+  background:var(--paper);color:var(--ink);
+  opacity:0;transition:opacity .28s ease;
+}
+#text.auf{display:block}
+#text.sichtbar{opacity:1}
+#text-kopf{
+  position:absolute;top:0;left:0;right:0;z-index:72;
+  padding:max(8px,env(safe-area-inset-top)) 12px 10px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(239,236,228,.93);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(29,29,31,.09);
+}
+#text-kopf .titel{color:var(--ink);opacity:.75;padding-top:0;font-size:13px}
+#text-kopf .knopf{background:rgba(29,29,31,.07);color:var(--ink);height:40px;min-width:40px;padding:0 12px}
+#text-kopf .knopf:hover{background:rgba(29,29,31,.14)}
+#text-innen{
+  position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;scroll-behavior:smooth;
+  padding:calc(env(safe-area-inset-top) + 74px) 22px calc(env(safe-area-inset-bottom) + 70px);
+}
+#text-satz{max-width:37em;margin:0 auto;font-size:var(--tgroesse,18px);line-height:1.62}
+#text-satz .tseite{padding-bottom:12px}
+#text-satz .tmarke{display:flex;align-items:center;gap:12px;margin:44px 0 26px;
+  font-size:.66em;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#a29c8c}
+#text-satz .tseite:first-child .tmarke{margin-top:4px}
+#text-satz .tmarke:after{content:"";flex:1;height:1px;background:rgba(29,29,31,.12)}
+#text-satz h2{font-size:1.62em;line-height:1.18;font-weight:800;letter-spacing:-.02em;margin:.75em 0 .45em}
+#text-satz h3{font-size:1.1em;line-height:1.35;font-weight:800;margin:1.5em 0 .3em}
+#text-satz .tseite > :first-of-type{margin-top:0}
+#text-satz p{margin:0 0 1.05em;color:#33343a}
+#text-satz p.klein{font-size:.82em;color:#7b7c84}
+#text-satz ul,#text-satz ol{margin:0 0 1.2em 1.2em;color:#33343a}
+#text-satz li{margin-bottom:.35em;padding-left:.2em}
+#text-satz ul li::marker{color:#b88d63}
+#text-satz ol li::marker{color:#b88d63;font-weight:800}
+#text-satz blockquote{margin:1.1em 0 1.3em;padding:.2em 0 .2em 1em;border-left:3px solid #b88d63;font-size:1.08em;font-weight:600;line-height:1.45}
+#text-satz .gegen{display:grid;grid-template-columns:1fr 1fr;gap:1.2em;margin:.6em 0 1.4em}
+#text-satz .gegen > div{background:rgba(29,29,31,.04);border-radius:10px;padding:.9em 1em}
+#text-satz .gegen h4{font-size:.9em;font-weight:800;margin:0 0 .5em}
+#text-satz .gegen .seite-a h4{color:#b0563e}
+#text-satz .gegen .seite-b h4{color:#5d7a59}
+#text-satz .gegen ul{margin:0 0 0 1.1em;font-size:.94em}
+@media (max-width:480px){#text-satz .gegen{grid-template-columns:1fr}}
+#text-satz p.zahl{margin:0 0 .7em}
+#text-satz p.zahl b{display:block;font-size:1.5em;font-weight:800;letter-spacing:-.02em;line-height:1.2;color:var(--ink)}
+#text-satz .tende{margin:52px 0 0;text-align:center;font-size:.8em;color:#8c8f97}
+@media (max-width:620px){
+  #text-innen{padding-left:18px;padding-right:18px}
+  #text-kopf .knopf{height:38px;min-width:38px;padding:0 10px}
+  #text-original span{display:none}
+}
+
+/* Helle Bühne, per ?hell in der Adresse. Für Einbettungen auf hellen Seiten. */
+body.hell{background:#f2f2f2}
+body.hell #kopf{background:linear-gradient(180deg,rgba(242,242,242,.95) 0%,rgba(242,242,242,.6) 55%,transparent 100%)}
+body.hell #fuss{background:linear-gradient(0deg,rgba(242,242,242,.95) 0%,rgba(242,242,242,.6) 60%,transparent 100%)}
+body.hell .titel{color:#191919}
+body.hell .knopf{background:rgba(25,25,25,.08);color:#191919}
+body.hell .knopf:hover{background:rgba(25,25,25,.16)}
+body.hell #tipp{background:rgba(25,25,25,.78);color:#fff}
+body.hell #buch{filter:drop-shadow(0 18px 34px rgba(0,0,0,.28))}
+body.hell #leiste{background:rgba(242,242,242,.96)}
+body.hell #leiste-innen figcaption{color:#191919}
+body.hell #laden{background:#f2f2f2}
+body.hell #laden p{color:#191919}
+
+/* Hinweis beim ersten Öffnen */
+#tipp{
+  position:absolute;left:50%;bottom:calc(var(--leiste) + 14px);transform:translateX(-50%);
+  z-index:35;background:rgba(0,0,0,.62);backdrop-filter:blur(10px);
+  padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+#tipp.auf{opacity:.92}
+
+/* Ladeanzeige */
+#laden{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:#151516;transition:opacity .5s}
+#laden.weg{opacity:0;pointer-events:none}
+.balken{width:200px;height:3px;background:rgba(255,255,255,.13);border-radius:2px;overflow:hidden}
+.balken i{display:block;height:100%;width:32%;background:linear-gradient(90deg,var(--gold-1),var(--gold-2));border-radius:2px;animation:lauf 1.15s ease-in-out infinite}
+@keyframes lauf{0%{transform:translateX(-110%)}100%{transform:translateX(380%)}}
+#laden p{font-size:13px;opacity:.55;letter-spacing:.05em}
+
+.versteckt{opacity:0 !important;transform:translateY(-6px)}
+#fuss.versteckt{transform:translateY(6px)}
+
+@media (max-width:620px){
+  :root{--leiste:50px}
+  .titel{font-size:12px;padding-top:9px}
+  .knopf{height:42px;min-width:42px;padding:0 12px;font-size:13px}
+  .knopf.gross{height:48px;min-width:48px}
+  #stand{min-width:82px}
+  #leiste-innen img{height:84px}
+}
+@media (max-width:359px){
+  #btn-text span{display:none}
+  #stand{min-width:72px}
+}
+@media (prefers-reduced-motion:reduce){
+  #leiste,#lupe,.knopf{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div id="buehne">
+  <header id="kopf">
+    <div class="titel">Recruiting Report <span>DigiSpace</span></div>
+    <div class="werkzeuge">
+      <button class="knopf" id="btn-ansicht" title="Einzel- oder Doppelseite" aria-label="Ansicht wechseln">
+        <svg id="sym-ansicht" viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></svg>
+      </button>
+      <button class="knopf" id="btn-lupe" title="Seite vergrößern (Z)" aria-label="Seite vergrößern">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6M11 8v6M8 11h6"/></svg>
+      </button>
+      <button class="knopf" id="btn-mini" title="Alle Seiten" aria-label="Alle Seiten">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="13" width="7" height="7" rx="1"/><rect x="14" y="13" width="7" height="7" rx="1"/></svg>
+      </button>
+      <button class="knopf" id="btn-voll" title="Vollbild (F)" aria-label="Vollbild">
+        <svg viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 011-1h4M20 9V5a1 1 0 00-1-1h-4M4 15v4a1 1 0 001 1h4M20 15v4a1 1 0 01-1 1h-4"/></svg>
+      </button>
+      <a class="knopf" id="btn-pdf" href="DigiSpace_Report.pdf" download title="Als PDF laden" aria-label="Als PDF laden">
+        <svg viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <div id="rahmen"><div id="buch"></div></div>
+
+  <div id="tipp">Wischen zum Blättern · „Lesen" macht den Text groß</div>
+
+  <footer id="fuss">
+    <button class="knopf gross" id="btn-zurueck" title="Zurück" aria-label="Vorherige Seite">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="knopf gross" id="stand" title="Alle Seiten anzeigen">1 / 32</button>
+    <button class="knopf gross" id="btn-vor" title="Weiter" aria-label="Nächste Seite">
+      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <button class="knopf gross" id="btn-text" title="Text groß lesen (T)">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 11h16M4 16h10"/></svg>
+      <span>Lesen</span>
+    </button>
+  </footer>
+
+  <div id="leiste"><div id="leiste-innen"></div></div>
+</div>
+
+<div id="lupe">
+  <div id="lupe-buehne"><img id="lupe-bild" alt=""></div>
+  <div id="lupe-kopf">
+    <div class="titel" id="lupe-stand">Seite 1</div>
+    <button class="knopf" id="lupe-zu" aria-label="Schließen">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div id="lupe-fuss">
+    <button class="knopf" id="lupe-zurueck" aria-label="Vorherige Seite">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="knopf" id="lupe-raus" aria-label="Kleiner"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+    <button class="knopf" id="lupe-breite">Breite</button>
+    <button class="knopf" id="lupe-rein" aria-label="Größer"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="knopf" id="lupe-vor" aria-label="Nächste Seite">
+      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
+
+<div id="text">
+  <div id="text-kopf">
+    <div class="titel" id="text-stand">Seite 1</div>
+    <div class="werkzeuge">
+      <button class="knopf" id="text-kleiner" aria-label="Schrift kleiner"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+      <button class="knopf" id="text-groesser" aria-label="Schrift größer"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="knopf" id="text-original" title="Seite im Original">
+        <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+        <span>Original</span>
+      </button>
+      <button class="knopf" id="text-zu" aria-label="Schließen"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+  </div>
+  <div id="text-innen"><article id="text-satz"></article></div>
+</div>
+
+<div id="laden">
+  <div class="balken"><i></i></div>
+  <p>Report wird geladen</p>
+</div>
+
+<script src="lib/page-flip.browser.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  var ANZAHL = 32;
+  if (/[?&]hell/.test(location.search)) document.body.classList.add('hell');
+  var nr = function(i){ return String(i).padStart(2,'0'); };
+  var seitenBild = function(i){ return 'seiten/s' + nr(i) + '.webp'; };
+  var zoomBild   = function(i){ return 'zoom/z'   + nr(i) + '.webp'; };
+  var miniBild   = function(i){ return 'mini/m'   + nr(i) + '.webp'; };
+
+  /* Wo auf jeder Seite der Inhalt wirklich beginnt (links, oben, rechts, unten
+     als Anteil der Seite). Damit springt die Leseansicht direkt auf den Text
+     statt auf den leeren Rand. Gemessen aus den Seitenbildern. */
+  var INHALT = [[.066,0,.93,.992],[0,0,1,1],[.146,.224,.854,.987],[.106,.145,.926,.984],
+    [0,0,.942,1],[.102,.068,.914,.978],[.058,.162,.955,.984],[.106,.068,1,.981],
+    [.122,.065,.93,.987],[.106,.068,.955,.987],[.029,.093,.95,.989],[.106,.068,.914,.984],
+    [0,.019,1,1],[.102,.068,.93,.984],[0,.028,.983,1],[.041,.068,.93,.981],
+    [0,.019,1,1],[.102,.068,.926,.981],[0,.016,1,1],[0,.068,1,1],
+    [0,.053,1,1],[0,.053,1,1],[0,.053,1,1],[0,.053,1,1],
+    [0,.053,1,1],[0,.053,1,1],[0,.048,1,1],[.094,.056,.753,.987],
+    [.074,.102,.85,.989],[0,.068,1,1],[0,0,1,1],[.098,.028,.713,.998]];
+
+  var rahmen = document.getElementById('rahmen');
+  var buch   = document.getElementById('buch');
+  var stand  = document.getElementById('stand');
+  var leiste = document.getElementById('leiste');
+  var flip = null;
+  var geladen = {};          // welche Seiten schon angefordert wurden
+
+  /* Die Bibliothek entfernt beim Zerstören ihren Container mitsamt Inhalt.
+     Deshalb werden die Seiten bei jedem Neuaufbau frisch erzeugt. */
+  function baueSeiten(){
+    if (buch && buch.parentNode) buch.parentNode.removeChild(buch);
+    buch = document.createElement('div');
+    buch.id = 'buch';
+    for (var i = 1; i <= ANZAHL; i++) {
+      var d = document.createElement('div');
+      d.className = 'seite' + (i === 1 || i === ANZAHL ? ' hart' : '');
+      if (i === 1 || i === ANZAHL) d.setAttribute('data-density','hard');
+      var img = document.createElement('img');
+      img.alt = 'Seite ' + i + ' von ' + ANZAHL;
+      img.dataset.i = i;
+      img.decoding = 'async';
+      if (geladen[i]) img.src = seitenBild(i);      // bereits geladene Seiten sofort wieder setzen
+      d.appendChild(img);
+      buch.appendChild(d);
+    }
+    rahmen.appendChild(buch);
+    buch.addEventListener('touchstart', function(e){
+      if (e.touches.length === 2) oeffneLupe();     // aufziehen mit zwei Fingern
+    }, {passive:true});
+    buch.addEventListener('dblclick', function(){ oeffneLupe(); });
+    return buch;
+  }
+
+  function ladeUmfeld(mitte){
+    for (var k = mitte - 4; k <= mitte + 5; k++) {
+      var seite = k + 1;
+      if (seite < 1 || seite > ANZAHL) continue;
+      geladen[seite] = true;
+      var b = buch.querySelectorAll('img')[k];
+      if (b && !b.src) b.src = seitenBild(seite);
+    }
+  }
+
+  /* ---------- Ansicht: einzeln oder doppelt ---------- */
+  var WUNSCH = null;
+  try { WUNSCH = localStorage.getItem('report-ansicht'); } catch(e){}
+
+  function platzBreite(){ return buch.clientWidth; }
+  function platzHoehe(){ return buch.clientHeight; }
+
+  function modus(){
+    var b = platzBreite(), h = platzHoehe();
+    if (b < 700) return 'einzel';                       // Handy immer einzeln
+    if (WUNSCH === 'einzel' || WUNSCH === 'doppel') return WUNSCH;
+    // Automatik: Doppelseite nur, wenn dabei eine gut lesbare Seitengröße entsteht
+    var seiteBeiDoppel = Math.min(b / 2, h / 1.414);
+    return seiteBeiDoppel >= 430 ? 'doppel' : 'einzel';
+  }
+
+  var aktuellerModus = null;
+
+  function baueBuch(startIndex){
+    if (flip) { try { flip.destroy(); } catch(e){} flip = null; }
+    baueSeiten();
+    if (startIndex > 0) ladeUmfeld(startIndex); else ladeUmfeld(0);
+    var m = modus();
+    aktuellerModus = m;
+
+    flip = new St.PageFlip(buch, {
+      width: 620, height: 877,
+      size: 'stretch',
+      autoSize: false,
+      minWidth: m === 'einzel' ? Math.max(120, Math.round(platzBreite() * 0.94)) : 170,
+      maxWidth: 1100,
+      minHeight: 160, maxHeight: 1600,
+      showCover: true,
+      usePortrait: true,
+      mobileScrollSupport: false,
+      flippingTime: 700,
+      maxShadowOpacity: 0.4,
+      drawShadow: true,
+      swipeDistance: 18,
+      clickEventForward: false,
+      useMouseEvents: true
+    });
+
+    flip.loadFromHTML(buch.querySelectorAll('.seite'));
+
+    flip.on('flip', function(e){
+      var s = e.data;
+      ladeUmfeld(s);
+      zeigeStand(s);
+      setzeHash(s);
+      markiereMini(s);
+    });
+    flip.on('changeState', function(e){ if (e.data === 'flipping') verbergeLeiste(); });
+
+    if (startIndex > 0) { ladeUmfeld(startIndex); flip.turnToPage(startIndex); }
+    zeigeStand(flip.getCurrentPageIndex());
+    markiereMini(flip.getCurrentPageIndex());
+    zeichneAnsichtSymbol();
+  }
+
+  function zeichneAnsichtSymbol(){
+    var s = document.getElementById('sym-ansicht');
+    s.innerHTML = aktuellerModus === 'doppel'
+      ? '<rect x="4" y="4" width="16" height="16" rx="1.5"/>'                                  // führt zu Einzelseite
+      : '<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/>';
+    document.getElementById('btn-ansicht').style.display = platzBreite() < 700 ? 'none' : '';
+  }
+
+  document.getElementById('btn-ansicht').addEventListener('click', function(){
+    WUNSCH = (aktuellerModus === 'doppel') ? 'einzel' : 'doppel';
+    try { localStorage.setItem('report-ansicht', WUNSCH); } catch(e){}
+    baueBuch(flip.getCurrentPageIndex());
+  });
+
+  /* ---------- Start ---------- */
+  var fertig = 0;
+  function evtlStarten(){ if (++fertig >= 2 && !flip) starte(); }
+  [1,2].forEach(function(n){
+    geladen[n] = true;
+    var vor = new Image();
+    vor.onload = evtlStarten; vor.onerror = evtlStarten;
+    vor.src = seitenBild(n);
+  });
+  setTimeout(function(){ if (!flip) starte(); }, 3500);
+
+  function starte(){
+    if (flip) return;
+    baueBuch(ausHash());
+    baueMiniaturen();
+    document.getElementById('laden').classList.add('weg');
+    setTimeout(function(){ var l = document.getElementById('laden'); if (l) l.remove(); }, 650);
+    zeigeTipp();
+
+    window.addEventListener('resize', function(){
+      clearTimeout(window.__t);
+      window.__t = setTimeout(function(){
+        if (!flip) return;
+        var jetzt = flip.getCurrentPageIndex();
+        if (modus() !== aktuellerModus) baueBuch(jetzt);
+        else { try { flip.update(); } catch(e){} zeichneAnsichtSymbol(); }
+      }, 200);
+    });
+  }
+
+  function zeigeStand(index){
+    var links = index + 1;
+    var doppel = flip && flip.getOrientation() === 'landscape' && index > 0 && index < ANZAHL - 1;
+    stand.textContent = doppel ? (links + '–' + Math.min(links + 1, ANZAHL) + ' / ' + ANZAHL)
+                               : (links + ' / ' + ANZAHL);
+    document.getElementById('btn-zurueck').disabled = index <= 0;
+    document.getElementById('btn-vor').disabled = index >= ANZAHL - 1;
+  }
+
+  /* ---------- Miniaturen ---------- */
+  function baueMiniaturen(){
+    var innen = document.getElementById('leiste-innen');
+    for (var i = 1; i <= ANZAHL; i++) {
+      var fig = document.createElement('figure');
+      fig.dataset.i = i - 1;
+      var m = document.createElement('img');
+      m.src = miniBild(i); m.loading = 'lazy'; m.alt = 'Zu Seite ' + i;
+      var cap = document.createElement('figcaption');
+      cap.textContent = i;
+      fig.appendChild(m); fig.appendChild(cap);
+      fig.addEventListener('click', function(){
+        var z = parseInt(this.dataset.i,10);
+        ladeUmfeld(z); flip.turnToPage(z); verbergeLeiste();
+      });
+      innen.appendChild(fig);
+    }
+  }
+  function markiereMini(index){
+    var alle = document.querySelectorAll('#leiste-innen figure');
+    for (var i = 0; i < alle.length; i++) alle[i].classList.toggle('aktiv', parseInt(alle[i].dataset.i,10) === index);
+    var a = document.querySelector('#leiste-innen figure.aktiv');
+    if (a && leiste.classList.contains('auf')) a.scrollIntoView({block:'nearest', inline:'center'});
+  }
+  function verbergeLeiste(){ leiste.classList.remove('auf'); }
+
+  /* ---------- Bedienung ---------- */
+  document.getElementById('btn-vor').addEventListener('click', function(){ flip.flipNext(); });
+  document.getElementById('btn-zurueck').addEventListener('click', function(){ flip.flipPrev(); });
+  document.getElementById('btn-mini').addEventListener('click', function(){
+    leiste.classList.toggle('auf');
+    if (leiste.classList.contains('auf')) markiereMini(flip.getCurrentPageIndex());
+  });
+  stand.addEventListener('click', function(){ document.getElementById('btn-mini').click(); });
+  document.getElementById('btn-voll').addEventListener('click', function(){
+    var e = document.documentElement;
+    var imRahmen = window.self !== window.top;
+    var geht = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+    /* iPhone kann im Rahmen kein Vollbild, dann eigener Tab */
+    if (!geht) { if (imRahmen) window.open(location.href, '_blank', 'noopener'); return; }
+    if (!(document.fullscreenElement || document.webkitFullscreenElement)) {
+      var r = (e.requestFullscreen || e.webkitRequestFullscreen).call(e);
+      if (r && r.catch && imRahmen) r.catch(function(){ window.open(location.href, '_blank', 'noopener'); });
+    }
+    else (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (textOffen()) {
+      if (e.key === 'Escape' || e.key === 't') schliesseText();
+      if (e.key === '+' || e.key === '=') { schriftSetzen(textGroesse + 2); e.preventDefault(); }
+      if (e.key === '-') { schriftSetzen(textGroesse - 2); e.preventDefault(); }
+      return;
+    }
+    if (lupeOffen()) {
+      if (e.key === 'Escape') schliesseLupe();
+      if (e.key === 'ArrowRight') lupeSeite(1);
+      if (e.key === 'ArrowLeft')  lupeSeite(-1);
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        if (amEnde() && weiterlesen(1)) return;
+        vy -= window.innerHeight * 0.8; grenzen(); male(true);
+      }
+      if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        if (amAnfang() && weiterlesen(-1)) return;
+        vy += window.innerHeight * 0.8; grenzen(); male(true);
+      }
+      if (e.key === '+' || e.key === '=') setzeZoom(zoom * 1.3);
+      if (e.key === '-') setzeZoom(zoom / 1.3);
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { flip.flipNext(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')  { flip.flipPrev(); e.preventDefault(); }
+    if (e.key === 'Home') flip.turnToPage(0);
+    if (e.key === 'End')  flip.turnToPage(ANZAHL - 1);
+    if (e.key === 'z' || e.key === '+') oeffneLupe();
+    if (e.key === 't') oeffneText();
+    if (e.key === 'f') document.getElementById('btn-voll').click();
+  });
+
+  function setzeHash(index){ try { history.replaceState(null, '', '#seite=' + (index + 1)); } catch(e){} }
+  function ausHash(){
+    var m = /seite=(\d+)/.exec(location.hash || '');
+    if (!m) return 0;
+    var s = parseInt(m[1],10) - 1;
+    return (s > 0 && s < ANZAHL) ? s : 0;
+  }
+
+  /* ---------- Leseansicht (Zoom) ---------- */
+  var lupe = document.getElementById('lupe');
+  var lupeBild = document.getElementById('lupe-bild');
+  var zoom = 1, vx = 0, vy = 0, basisBreite = 0, lupeSeitenNr = 1;
+  var zieht = false, sx = 0, sy = 0, startAbstand = 0, startZoom = 1;
+
+  function lupeOffen(){ return lupe.classList.contains('auf'); }
+
+  function oeffneLupe(seite, ausrichtung){
+    var warOffen = lupeOffen();
+    lupeSeitenNr = seite || (flip.getCurrentPageIndex() + 1);
+    document.getElementById('lupe-stand').textContent = 'Seite ' + lupeSeitenNr + ' von ' + ANZAHL;
+    lupeBild.src = zoomBild(lupeSeitenNr);
+    lupeBild.onload = function(){
+      passeAn(leseArt, warOffen);                 // gewählte Größe bleibt beim Blättern erhalten
+      if (ausrichtung === 'unten') { vy = -grenzeY(); male(false); }
+    };
+    lupe.classList.add('auf');
+    requestAnimationFrame(function(){ lupe.classList.add('sichtbar'); });
+    document.getElementById('lupe-zurueck').disabled = lupeSeitenNr <= 1;
+    document.getElementById('lupe-vor').disabled = lupeSeitenNr >= ANZAHL;
+  }
+  function schliesseLupe(){
+    lupe.classList.remove('sichtbar');
+    setTimeout(function(){ lupe.classList.remove('auf'); }, 260);
+    if (flip && lupeSeitenNr - 1 !== flip.getCurrentPageIndex()) {
+      ladeUmfeld(lupeSeitenNr - 1);
+      flip.turnToPage(lupeSeitenNr - 1);
+    }
+  }
+  var leseArt = 'lesen';             // Standard: auf Lesegröße gezoomt, das ist der Sinn der Ansicht
+  var leseZoom = 0;                  // zuletzt gewählte Größe, bleibt über Seiten hinweg bestehen
+
+  /* Vergrößerung, bei der der Fließtext angenehm lesbar ist: die Seite wird rund
+     900 px breit dargestellt, egal wie schmal das Gerät ist. */
+  function lesefaktor(){
+    if (!basisBreite) return 1;
+    return Math.min(3.2, Math.max(1, 900 / basisBreite));
+  }
+
+  function passeAn(art, groesseBehalten){
+    leseArt = art;
+    var bw = lupeBild.naturalWidth, bh = lupeBild.naturalHeight;
+    if (!bw) return;
+    // Grundgröße ist immer die ganze Seite, der Zoom kommt obendrauf
+    var s = Math.min(window.innerWidth / bw, window.innerHeight / bh);
+    basisBreite = bw * s;
+    lupeBild.style.width = basisBreite + 'px';
+    if (art === 'lesen') zoom = (groesseBehalten && leseZoom > 1) ? leseZoom : lesefaktor();
+    else zoom = 1;
+    leseZoom = zoom;
+    stellEin(art === 'lesen');
+    beschrifteLesen();
+    male(true);
+  }
+
+  /* Setzt den Ausschnitt an den Anfang des Inhalts statt an den leeren Seitenrand */
+  function stellEin(aufDenText){
+    var W = basisBreite * zoom;
+    var H = W * (lupeBild.naturalHeight / lupeBild.naturalWidth);
+    var box = INHALT[lupeSeitenNr - 1] || [0,0,1,1];
+    vx = aufDenText ? (W / 2 - box[0] * W - window.innerWidth / 2) : 0;
+    vy = H / 2 - (aufDenText ? box[1] : 0) * H - window.innerHeight / 2;
+    grenzen();
+  }
+  function beschrifteLesen(){
+    document.getElementById('lupe-breite').textContent = (leseArt === 'lesen') ? 'Ganze Seite' : 'Text größer';
+  }
+  function grenzeY(){
+    var H = basisBreite * zoom * (lupeBild.naturalHeight / lupeBild.naturalWidth);
+    return Math.max(0, (H - window.innerHeight) / 2);
+  }
+  function amEnde(){   return vy <= -grenzeY() + 2; }
+  function amAnfang(){ return vy >=  grenzeY() - 2; }
+
+  /* Weiterlesen: unten angekommen geht es auf der nächsten Seite oben weiter */
+  var letzterSprung = 0;
+  function weiterlesen(richtung){
+    if (Date.now() - letzterSprung < 450) return true;
+    var neu = lupeSeitenNr + richtung;
+    if (neu < 1 || neu > ANZAHL) return false;
+    letzterSprung = Date.now();
+    oeffneLupe(neu, richtung < 0 ? 'unten' : 'oben');
+    return true;
+  }
+  function setzeZoom(z, punktX, punktY){
+    var alt = zoom;
+    var neu = Math.min(5, Math.max(0.8, z));
+    if (punktX !== undefined) {
+      // Der angetippte Punkt soll an seiner Stelle bleiben
+      var mx = window.innerWidth / 2 + vx, my = window.innerHeight / 2 + vy;
+      var px = (punktX - mx) / alt, py = (punktY - my) / alt;
+      vx = punktX - window.innerWidth / 2 - px * neu;
+      vy = punktY - window.innerHeight / 2 - py * neu;
+    }
+    zoom = neu; leseZoom = neu;
+    grenzen(); male(true);
+  }
+  function grenzen(){
+    var breite = basisBreite * zoom;
+    var hoehe  = breite * (lupeBild.naturalHeight / lupeBild.naturalWidth);
+    var maxX = Math.max(0, (breite - window.innerWidth) / 2);
+    var maxY = Math.max(0, (hoehe - window.innerHeight) / 2);
+    vx = Math.min(maxX, Math.max(-maxX, vx));
+    vy = Math.min(maxY, Math.max(-maxY, vy));
+  }
+  function male(weich){
+    lupeBild.style.transition = weich ? 'transform .24s cubic-bezier(.32,.72,0,1)' : 'none';
+    lupeBild.style.transform = 'translate(-50%,-50%) translate(' + vx + 'px,' + vy + 'px) scale(' + zoom + ')';
+  }
+  function lupeSeite(richtung){
+    var neu = lupeSeitenNr + richtung;
+    if (neu < 1 || neu > ANZAHL) return;
+    oeffneLupe(neu);
+  }
+
+  document.getElementById('btn-lupe').addEventListener('click', function(){ oeffneLupe(); });
+  document.getElementById('lupe-zu').addEventListener('click', schliesseLupe);
+  document.getElementById('lupe-rein').addEventListener('click', function(){ setzeZoom(zoom * 1.35); });
+  document.getElementById('lupe-raus').addEventListener('click', function(){ setzeZoom(zoom / 1.35); });
+  document.getElementById('lupe-breite').addEventListener('click', function(){
+    leseZoom = 0;                                   // bewusste Neuwahl, nicht die alte Größe übernehmen
+    passeAn(leseArt === 'lesen' ? 'seite' : 'lesen');
+  });
+  document.getElementById('lupe-vor').addEventListener('click', function(){ lupeSeite(1); });
+  document.getElementById('lupe-zurueck').addEventListener('click', function(){ lupeSeite(-1); });
+
+  lupe.addEventListener('dblclick', function(e){
+    if (e.target.closest('#lupe-kopf, #lupe-fuss')) return;
+    if (zoom > 1.05) { leseZoom = 0; passeAn('seite'); }
+    else setzeZoom(lesefaktor(), e.clientX, e.clientY);
+  });
+  lupe.addEventListener('wheel', function(e){
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey) {                 // Strg oder cmd plus Rad vergrößert
+      setzeZoom(zoom - e.deltaY * 0.0045, e.clientX, e.clientY);
+    } else {                                      // sonst wird gescrollt wie in einem Dokument
+      if (e.deltaY > 0 && amEnde()   && weiterlesen(1))  return;
+      if (e.deltaY < 0 && amAnfang() && weiterlesen(-1)) return;
+      vy -= e.deltaY; vx -= e.deltaX;
+      grenzen(); male(false);
+    }
+  }, {passive:false});
+  lupe.addEventListener('pointerdown', function(e){
+    if (e.target.closest('#lupe-kopf, #lupe-fuss')) return;
+    zieht = true; sx = e.clientX - vx; sy = e.clientY - vy;
+    try { lupe.setPointerCapture(e.pointerId); } catch(err){}
+  });
+  lupe.addEventListener('pointermove', function(e){
+    if (!zieht) return;
+    vx = e.clientX - sx; vy = e.clientY - sy;
+    grenzen(); male(false);
+  });
+  /* Beim Wischen ohne Zoom die Seite wechseln */
+  var wischStart = null;
+  lupe.addEventListener('pointerdown', function(e){
+    if (e.target.closest('#lupe-kopf, #lupe-fuss')) return;
+    wischStart = {x:e.clientX, y:e.clientY, t:Date.now()};
+  });
+  lupe.addEventListener('pointerup', function(e){
+    zieht = false;
+    if (!wischStart) return;
+    var dx = e.clientX - wischStart.x, dy = e.clientY - wischStart.y;
+    var schnell = Date.now() - wischStart.t < 600;
+    wischStart = null;
+    var querFrei = Math.abs(vx) >= (basisBreite * zoom - window.innerWidth) / 2 - 2;
+    if (schnell && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4 && querFrei) {
+      lupeSeite(dx < 0 ? 1 : -1);                 // seitlich wischen blättert
+    } else if (schnell && Math.abs(dy) > 70 && Math.abs(dy) > Math.abs(dx) * 1.4) {
+      if (dy < 0 && amEnde())   weiterlesen(1);   // unten angekommen: nächste Seite
+      if (dy > 0 && amAnfang()) weiterlesen(-1);  // oben angekommen: Seite davor
+    }
+  });
+  lupe.addEventListener('pointercancel', function(){ zieht = false; wischStart = null; });
+
+  lupe.addEventListener('touchstart', function(e){
+    if (e.touches.length === 2) { startAbstand = abstand(e.touches); startZoom = zoom; zieht = false; }
+  }, {passive:true});
+  lupe.addEventListener('touchmove', function(e){
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      setzeZoom(startZoom * (abstand(e.touches) / startAbstand));
+    }
+  }, {passive:false});
+  function abstand(t){ return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+
+  window.addEventListener('resize', function(){ if (lupeOffen()) passeAn(leseArt, true); });
+
+
+  /* ---------- Textansicht: der Report als Artikel ---------- */
+  /* Der Text stammt direkt aus der Druckdatei. h1/h2 sind Überschriften,
+     p ist Fließtext, klein sind Bildunterschriften und Kleingedrucktes. */
+  var TEXTE = [[["klein","RECRUITING-REPORT: Die 4 Bausteine der PUZZLE-Methode + 7 Fallstudien"],["h1","Recruiting"],["p","Die PUZZLE-Methode: 4 Bausteine, mit denen Unternehmen offene Stellen planbar besetzen, auch wenn Jobportale, Headhunter und Agenturen versagen."]],[["h1","430+ Unternehmen vertrauen auf DigiSpace GmbH"],["zahl","1.000+","Besetzungen jedes Jahr"],["zahl","100+","GOOGLE-Bewertungen"],["zahl","6+","Jahre Branchenexpertise"]],[["h1","In dieser Ausgabe"],["liste",["Vorwort von Christoph Skuk · Seite 2","Warum viele Unternehmen heute keine passenden Mitarbeiter mehr finden · Seite 4","Was passiert, wenn Stellen nicht besetzt werden · Seite 6","Nicht mehr Kanäle. Die richtigen Kanäle · Seite 7","Die PUZZLE-Methode auf einen Blick · Seite 8","PUZZLE-Baustein 1 · Seite 11","PUZZLE-Baustein 2 · Seite 13","PUZZLE-Baustein 3 · Seite 15","PUZZLE-Baustein 4 · Seite 17","Echte Fälle aus der Praxis · Seite 18","Häufig gestellte Fragen · Seite 26","Wir sind DigiSpace · Seite 28","Die nächsten Schritte · Seite 28"]],["klein","Hinweis: Aus Gründen der Lesbarkeit wurde im Text die männliche Form gewählt. Nichtsdestoweniger beziehen sich die Angaben auf Angehörige aller Geschlechter."]],[["h1","Liebe Leserin, lieber Leser,"],["p","schön, dass Sie diesen Recruiting-Report in den Händen halten."],["p","Recruiting verändert sich aktuell schneller als je zuvor. Der Arbeitsmarkt verändert sich. Die Erwartungen von Bewerbern verändern sich. Die wirtschaftlichen Rahmenbedingungen verändern sich. Und auch Unternehmen müssen ihre Art, neue Mitarbeiter zu gewinnen, jedes Jahr neu hinterfragen."],["p","Was vor eins bis zwei Jahren noch zuverlässig funktioniert hat, bringt heute oft kaum noch Bewerbungen. Oder Bewerbungen, die qualitativ nicht passen."],["p","Genau deshalb haben wir diesen Report erstellt."],["p","Auf den nächsten Seiten erhalten Sie einen praxisnahen Einblick in die Recruiting-Strategien, die heute wirklich funktionieren. Sie erfahren, warum viele klassische Methoden heute nicht mehr ausreichen, welche Fehler Unternehmen bei der Mitarbeitersuche immer wieder machen und wie Recruiting-Maßnahmen aufgebaut sein müssen, um passende Bewerber zu erreichen."],["p","Mein Name ist Christoph Skuk, Geschäftsführer von DigiSpace. Seit über sechs Jahren bin ich mit meinem Team auf Recruiting spezialisiert. In dieser Zeit durften wir bereits über 430 Unternehmen dabei unterstützen, offene Stellen mit den richtigen Strategien erfolgreich zu besetzen."],["p","Dabei hat sich eines immer wieder gezeigt: Es gibt nicht die EINE Recruiting-Lösung, die für jedes Unternehmen funktioniert. Jedes Unternehmen, jede Stelle und jede Bewerberzielgruppe braucht eine individuelle Strategie."],["p","Ich wünsche Ihnen viel Freude beim Lesen und vor allem viele wertvolle Impulse für Ihr Recruiting."],["p","Christoph Skuk"],["klein","Christoph Skuk auf LinkedIn: Weitere Recruiting-Impulse & Einblicke"]],[["h2","Christoph Skuk, MA"],["klein","Gründer und Geschäftsführer der DigiSpace GmbH"]],[["h1","Warum viele Unternehmen heute keine passenden Mitarbeiter mehr finden"],["p","Die meisten Unternehmen stehen heute beim Recruiting vor genau zwei Problemen:"],["liste",["Sehr viele Bewerbungen, aber in schlechter Qualität","Überhaupt keine Bewerbungen"]],["p","Dazwischen gibt es kaum noch etwas."],["p","Viele Geschäftsführer, Personalverantwortliche und Unternehmer erleben aktuell dieselbe Situation. Offene Stellen bleiben über Wochen oder Monate unbesetzt, obwohl bereits viel Geld, Zeit und Energie in die Mitarbeitersuche investiert wurde."],["p","Der erste Gedanke ist meist immer derselbe: „Wir schalten die Stelle auf Jobportalen.“ Danach folgen Empfehlungen aus dem Netzwerk, Active Sourcing über LinkedIn oder Headhunter. In den letzten Jahren haben auch viele Unternehmen Recruiting-Agenturen ausprobiert. Häufig mit großen Versprechen, aber enttäuschenden Ergebnissen."],["p","Die Folge: Viele Unternehmen verlieren das Vertrauen in neue Recruiting-Strategien. Und genau hier beginnt das eigentliche Problem."],["p","Denn obwohl viele Verantwortliche bereits spüren, dass die bisherigen Wege nicht mehr funktionieren, bleiben sie trotzdem bei denselben Methoden. Nicht, weil sie überzeugt davon sind, sondern weil sie nicht wissen, welche Alternative wirklich funktioniert."]],[["h1","Die Auswahl an Möglichkeiten war noch nie so groß"],["liste",["Jobportale","Social Media","Active Sourcing","Employer Branding","Headhunter"]],["klein","Das Ergebnis: Recruiting-Wirrwarr"],["p","Genau diese Vielzahl sorgt für Unsicherheit. Viele Unternehmen sehen den Wald vor lauter Bäumen nicht mehr. Und genau dadurch entsteht Skepsis gegenüber neuen Strategien."],["h2","Viele Wege. Wenig Orientierung. Kaum passende Mitarbeiter."]],[["h1","Was passiert, wenn Stellen nicht besetzt werden"],["p","Fehlen Mitarbeiter, merkt man das jeden Tag im Betrieb: Aufträge bleiben liegen, Projekte verzögern sich und die vorhandene Mannschaft muss immer mehr auffangen. Überstunden steigen, Urlaubsplanung wird schwieriger und die Belastung wächst."],["p","Als letzte Lösung bleiben oft Leasing-Mitarbeiter. Kurzfristig hilfreich, langfristig aber meist deutlich teurer als eigene qualifizierte Mitarbeiter."],["p","Gleichzeitig gehen immer mehr erfahrene Fachkräfte in Pension und zu wenig Nachwuchs kommt nach. Mit jedem Mitarbeiter verschwindet damit nicht nur Arbeitskraft, sondern auch wertvolles Wissen aus dem Unternehmen."],["p","Wer heute keine funktionierende Recruiting-Strategie entwickelt, riskiert morgen weit mehr als nur offene Stellen."],["p","Die entscheidende Frage lautet heute: Wie gewinnt man die richtigen Mitarbeiter, damit bestehende Kunden überhaupt weiterhin zuverlässig betreut werden können?"],["h2","Die Folgen im Betrieb"],["liste",["Sinkende Qualität","Instabile Prozesse","Überlastete Teams","Produktionsengpässe"]]],[["h1","Nicht mehr Kanäle. Die richtigen Kanäle."],["p","Erfolgreiches Recruiting entsteht nicht dadurch, überall präsent zu sein. Sondern dort, wo die richtigen Bewerber tatsächlich erreichbar sind."],["p","Wenn man heute mit Unternehmen über Recruiting spricht, lassen sich sehr schnell folgende zwei Gruppen erkennen:"],["gegen","Gruppe A: Viel probiert. Wenig Wirkung.",["Viele Kanäle","Hoher Aufwand","Keine klare Strategie","Geringe Qualität der Bewerbungen"],"Gruppe B: Gezielt statt überall.",["Kanäle vorab analysiert","Bewusst ausgewählt","Konsequent optimiert","Hohe Qualität der Bewerbungen"]],["p","Warum? Erfolgreiche Unternehmen starten nicht mit der Frage: „Welchen Kanal haben wir noch nicht probiert?“ Sondern mit der Frage: „Wo erreichen wir genau die Menschen, die wir für diese Stelle brauchen?“"],["h2","Nicht die Anzahl der Kanäle entscheidet, sondern die richtige Auswahl der Kanäle."],["klein","sondern die richtige Auswahl der Kanäle."]],[["h1","Die PUZZLE Methode"],["p","Vier Bausteine. Eine Methode. So besetzen Unternehmen offene Stellen planbar und in hoher Qualität."],["p","Jeder Baustein ist für sich stark. Zusammen entsteht ein System, das wirklich funktioniert."]],[["h2","01  Unternehmens-DNA für jede Stelle"],["p","Wir finden heraus, was Sie als Arbeitgeber wirklich von anderen unterscheidet."],["h2","02  Köder-Videos"],["p","Wir erstellen Inhalte, die auffallen. Nicht weil sie laut sind, sondern weil sie relevant sind."],["h2","03  Personalisierte Werbung"],["p","Wir suchen dort, wo Ihre potentiellen Bewerber unterwegs sind."],["h2","04  Digitaler Lebenslauf"],["p","Durch unseren „digitalen Lebenslauf“ erhalten Sie alle relevanten Informationen."]],[["h1","Das machen die meisten falsch"],["p","Die meisten Unternehmen kommunizieren über das Unternehmen, über Benefits und über Werte, aber nie über die konkrete Stelle und den konkreten Bewerber."],["liste",["Tolles Team","Weiterbildung","Flexible Arbeitszeiten","Moderne Arbeitsplätze","Sicherer Arbeitsplatz","Spannende Aufgaben","Faire Bezahlung","Flache Hierarchien","Gute Einarbeitung"]],["p","Das führt zu folgenden Ergebnissen:"],["liste",["Wenig Bewerbungen","Schwache Qualität","Kandidaten reagieren nicht","Kein echter Wechselgrund"]],["h2","Wenn alle dasselbe sagen, fühlt sich niemand persönlich angesprochen!"]],[["h1","So macht man es richtig"],["klein","PUZZLE-Baustein 1: Unternehmens-DNA"],["p","Der Gamechanger liegt in der stellenbezogenen DNA der konkret gesuchten Position. Nicht in der allgemeinen Arbeitgebermarke, sondern in der Frage:"],["zitat","Warum ist genau diese Stelle, in genau dieser Abteilung, bei genau diesem Unternehmen für genau diesen Bewerber attraktiv?"],["p","Spezifische Kommunikation trifft einen Nerv. Sie zeigt dem passenden Bewerber: Hier geht es wirklich um mich."],["liste",["Warum genau diese Stelle? Was macht diese Position wirklich besonders?","Warum genau dieses Unternehmen? Was bekommt der Bewerber hier, was er woanders nicht bekommt?","Warum genau dieser Bewerber? Welche fachlichen, persönlichen und emotionalen Gründe sollen ihn ansprechen?","Warum genau jetzt? Warum lohnt sich ein Wechsel für den Bewerber gerade jetzt?"]],["h2","4 Jahre in Folge erfolgreich rekrutiert"],["p","Unser Kunde Michael G. vom Steakhaus Goritschnigg arbeitet bereits vier Jahre in Folge mit DigiSpace zusammen, weil das Ergebnis stimmt und die Zusammenarbeit einfach passt."]],[["h1","Alle Employer Branding Videos sehen gleich aus"],["p","In den letzten Jahren haben Unternehmen enorm viel in Employer Branding investiert."],["zahl","ca. 7.000 €","für ein HR-Video ausgegeben"],["zahl","1.147","durchschnittliche Aufrufe"],["zahl","2","Bewerbungen dadurch erhalten"],["h2","Wenn alles gleich aussieht, fällt niemand mehr auf!"]],[["h1","Erfolgreiches Recruiting funktioniert heute anders"],["klein","PUZZLE-Baustein 2: Köder-Videos"],["p","Es darf sich auf den ersten Blick nicht wie klassische Werbung oder eine typische Recruiting-Kampagne anfühlen."],["p","Entscheidend ist, Inhalte zu schaffen, die für die Zielgruppe wirklich relevant sind: emotional, überraschend oder nahbar genug, um Aufmerksamkeit zu wecken und echtes Interesse auszulösen."],["h2","Die Köder-Videos:"],["p","Statt Hochglanz braucht es authentische, zielgerichtete Köder-Videos: direkt aus dem Alltag, mit echten Menschen und einer klaren Botschaft für jede Zielgruppe."],["h2","Menschen stoppen nicht für Recruiting. Sie stoppen für interessante Inhalte."],["liste",["Gezielte Botschaften statt allgemeiner Kommunikation","Echte Einblicke statt austauschbarem Unternehmenslook","Direkte Ansprache statt verlorener Aufmerksamkeit"]],["h2","100+ Bewerbungen in 4 Monaten"],["p","Unser Kunde Horst K. vom Hilfswerk Kärnten konnte in den vergangenen drei Jahren mit der PUZZLE-Methode offene Stellen deutlich schneller besetzen als über klassische Inserate."]],[["h1","Die meisten suchen am falschen Ort"],["p","Viele Recruiting-Maßnahmen fokussieren sich ausschließlich auf aktiv suchende Bewerber. Also auf Menschen, die bereits auf Jobportalen unterwegs sind oder aktiv nach einer neuen Stelle suchen."],["zitat","Die besten Mitarbeiter suchen oft gar nicht aktiv nach einem neuen Job."],["p","Sie sind vielleicht grundsätzlich offen für einen Wechsel, aber sie müssen zuerst überhaupt sehen, dass es Ihr Unternehmen gibt. Und noch wichtiger: Sie müssen verstehen, warum es sich lohnt, sich genau bei Ihnen zu bewerben."],["liste",["Aktiv suchende Bewerber","Nicht aktiv suchende Talente (hohe Dunkelziffer)"]],["h2","Sichtbarkeit reicht nicht. Entscheidend ist, wen Sie erreichen – und wie."]],[["h1","Da sein, wo der richtige Mensch ist"],["klein","PUZZLE-Baustein 3: Personalisierte Werbung"],["p","Effizientes Recruiting muss anders gedacht werden."],["schritte",["Klare, spezifische Botschaft. Erst die Botschaft, dann der Kanal.","Aufmerksamkeitsstarke Außendarstellung. Nicht wie Recruiting wirken.","Der richtige Ort. Erreichen Sie den Bewerber im Freizeitmodus."]],["zitat","Entscheidend ist nicht der Kanal allein. Entscheidend ist, dass der passende Bewerber Sie sieht, versteht und spürt: Das könnte für mich interessant sein."],["h2","Erster Monat: Rekord-Bewerberzahlen"],["p","Unser Kunde Peter H. von Hermann Pfanner Getränke erhielt in den ersten sechs Monaten mehr qualifizierte Bewerbungen als je zuvor, weil mit der PUZZLE-Methode gezielt die richtigen Bewerber angesprochen wurden."]],[["h1","Hier verlieren Unternehmen die besten Bewerber"],["p","Viele Unternehmen investieren viel Geld in Werbung, verlieren potentielle Bewerber aber im allerletzten Schritt, weil der Bewerbungsprozess nicht an die Menschen angepasst ist."],["p","Über 95 Prozent aller Bewerbungen werden heute mobil gestartet oder abgeschlossen."],["zahl","100 %","Stellenanzeige öffnen"],["zahl","63 %","Konto anlegen"],["zahl","38 %","Lebenslauf hochladen"],["zahl","17 %","Wiederholte Angaben machen"],["zahl","5 %","Bewerbung absenden"],["h2","Komplizierte Bewerbungen kosten gute Kandidaten!"]],[["h1","Mobile First mit digitalem Headhunter"],["klein","PUZZLE-Baustein 4: Digitaler Lebenslauf"],["p","Erfolgreiche Recruiting-Prozesse funktionieren heute nach dem Mobile-First-Prinzip."],["p","Der Bewerbungsprozess muss für den Bewerber effizient und mobil optimiert sein. Gleichzeitig muss er intelligent filtern, damit möglichst viele qualifizierte Bewerbungen entstehen."],["p","Das Ziel ist nicht, möglichst viele Bewerbungen zu erhalten. Das Ziel ist, die richtigen Bewerbungen zu erhalten."],["liste",["Mobile First: Optimiert für die Bewerbung am Smartphone","Automatische Vorqualifizierung: Intelligent filtern, statt manuell prüfen","Sofortige Bestätigung: Bewerber erhalten sofort Rückmeldung","Nur passende Kandidaten: Mehr Qualität statt mehr Masse"]],["h2","Trotz Skepsis: Position besetzt"],["p","Unser Kunde Wilhelm Z. von Tortec Brandschutztor war anfangs skeptisch, weil er schlechte Erfahrungen mit Agenturen hatte. Heute empfiehlt er DigiSpace weiter."]],[["h1","Echte Fälle. Echte Stellen. Echte Ergebnisse."],["p","Vieles lässt sich behaupten. Entscheidend ist, was sich belegen lässt."],["p","Hier ein Auszug im Report: Sieben Unternehmen, sieben Geschichten. Aus unterschiedlichen Branchen. Jede Geschichte zeigt, wo die Herausforderung lag, was das Ziel war und welches Ergebnis erreicht wurde."],["p","Alle Fälle sind gleich aufgebaut: Ausgangslage. Ziel. Ergebnis. So sehen Sie auf einen Blick, welche Geschichte zu Ihrer eigenen Situation passt."],["p","Mehr Erfolgsgeschichten finden Sie auf digispace.at. Viele davon als Video, in dem die Geschäftsführer selbst zu Wort kommen."]],[["klein","Haus der Schlösser · Martin H. • Geschäftsführer"],["h1","3x mehr Bewerbungen als über klassische Kanäle"],["h2","Ausgangssituation"],["p","Das Unternehmen Haus der Schlösser Gruppe suchte über Zeitung, Jobportale und klassische Empfehlungen nach qualifizierten Mitarbeitern. Die Ausbeute war überschaubar. Der Aufwand pro Einstellung wurde immer höher."],["h2","Ziel"],["p","Mit der PUZZLE-Methode haben wir die richtige Zielgruppe gezielt angesprochen und durch personalisierte Werbung relevante Sichtbarkeit geschaffen."],["h2","Ergebnis"],["p","Die Anzahl der Bewerbungen stieg auf das Dreifache. Die Skepsis war groß, das Ergebnis ist eindeutig. DigiSpace lieferte dreimal mehr Bewerbungen als alle klassischen Kanäle zusammen."]],[["klein","LENZING Papier · Ernst B. • Geschäftsführer & Inhaber"],["h1","300 Bewerbungen. Personalprobleme gelöst."],["h2","Ausgangssituation"],["p","LENZING Papier stand vor massiven Personalproblemen. Trotz starker Marke und guter Arbeitgeberkonditionen kamen zu wenige Bewerbungen. Der Wettbewerbsdruck um Fachkräfte war enorm."],["h2","Ziel"],["p","DigiSpace startete eine ganzheitliche Recruiting-Offensive für LENZING Papier. Die Bewerberkanäle wurden strategisch neu aufgesetzt."],["h2","Ergebnis"],["p","Über 300 Bewerbungen gingen ein. Alle akuten Personalprobleme wurden gelöst. Die Zusammenarbeit läuft weiter, weil die Ergebnisse messbar sind."]],[["klein","TB Petar GmbH · Julia P. • Assistenz der Geschäftsführung"],["h1","20 Bewerbungen in Woche 1. Einstellung nach 3 Wochen."],["h2","Ausgangssituation"],["p","TB Petar Elektrotechnik in der Steiermark suchte jahrelang qualifizierte Elektrotechniker. Über klassische Wege kamen kaum passende Kandidaten. Wenn sich jemand meldete, stimmte oft die Qualität oder der menschliche Fit nicht."],["h2","Ziel"],["p","DigiSpace produzierte authentische Recruiting-Videos. Direkt nach der Online-Veröffentlichung meldeten sich qualifizierte Fachkräfte aus der Branche. Die Videos zeigten den Betrieb so, wie er wirklich ist."],["h2","Ergebnis"],["p","Innerhalb der ersten Woche gingen 20 Bewerbungen ein. Die erste Bewerbung kam kurz nach den Weihnachtsferien. Nach nur drei Wochen war der neue Kollege eingestellt und passt fachlich und menschlich perfekt ins Team."]],[["klein","STUGEBA Mobile Raumsysteme · Harald S. • Projektleiter"],["h1","5 Neueinstellungen. 30 Bewerbungen."],["h2","Ausgangssituation"],["p","STUGEBA Mobile Raumsysteme aus Bad St. Leonhard suchte gezielt Fachkräfte für ihren ländlichen Standort. Bisherige Recruiting-Versuche hatten wenig gebracht. Harald S. war anfangs skeptisch."],["h2","Ziel"],["p","DigiSpace startete sofort mit der Umsetzung. Die Geschwindigkeit zwischen Briefing und Live-Kampagne war für den Kunden beeindruckend. Recruiting-Videos und Zielgruppen-Ansprache waren bereits ab der ersten Woche treffsicher."],["h2","Ergebnis"],["p","In wenigen Wochen kamen 30 Bewerbungen. Fünf neue Kollegen wurden eingestellt. Harald S. wurde eines Besseren belehrt, weil ihn die Umsetzungsgeschwindigkeit überzeugte."]],[["klein","BKG Big Kommunal · Roland G. • Geschäftsführer & Inhaber"],["h1","100+ Bewerbungen in 4 Tagen, statt 2 Bewerbungen in 2 Wochen."],["h2","Ausgangssituation"],["p","Big Kommunal warb bisher über Radio und Zeitungsartikel. Die Resonanz war sehr schwach, oft nur ein bis zwei unqualifizierte Bewerbungen alle zwei Wochen. Klassische Werbekanäle waren übersättigt und uninteressant geworden."],["h2","Ziel"],["p","Nach dem Beratungsgespräch startete Big Kommunal direkt die Zusammenarbeit. DigiSpace setzte die individuell zugeschnittene PUZZLE-Methode um – zielgerichtet, schnell und mit einem Ergebnis, das die Erwartungen erfüllte."],["h2","Ergebnis"],["p","In wenigen Tagen kamen über 100 Bewerbungen. Motivierte, qualifizierte Mitarbeiter meldeten sich, die Big Kommunal davor nicht als Arbeitgeber wahrgenommen haben. Roland empfiehlt die Zusammenarbeit jedem Betrieb."]],[["klein","SMB Industrieanlagenbau · Harald M. • Human Resources"],["h1","12 Monate DigiSpace. Laufend neue Fachkräfte."],["h2","Ausgangssituation"],["p","Die SMB Industrieanlagenbau in Hart bei Graz ist im Rohrleitungsund Anlagenbau tätig. Der Fachkräftemangel traf das Unternehmen genauso hart wie den Rest der Branche. Klassische Inserate brachten kaum noch qualifizierte Bewerber."],["h2","Ziel"],["p","Seit über einem Jahr arbeitet SMB mit DigiSpace zusammen. Mit der PUZZLE-Methode erreichen gezielte Köder-Videos genau die richtige Zielgruppe. Bewerber lernen das Unternehmen und die Menschen dahinter bereits vor dem ersten Gespräch kennen und erhalten so einen authentischen ersten Eindruck."],["h2","Ergebnis"],["p","SMB erhält heute regelmäßig hochwertige Bewerbungen. Die Zusammenarbeit wurde nach einem Jahr verlängert, weil sie messbar Umsatz sichert. Harald M. bezeichnet DigiSpace als echten Marktvorteil."]],[["klein","ÖAMTC · Sabine S. • Human Resources"],["h1","Jobportale abgeschafft. DigiSpace reicht."],["h2","Ausgangssituation"],["p","Der ÖAMTC ist eine der bekanntesten Marken Österreichs. Trotzdem war der Bewerbereingang über Standard-Jobportale zäh. Der Aufwand für Ausschreibungen stand nicht mehr im Verhältnis zum Ergebnis."],["h2","Ziel"],["p","DigiSpace baute eine gezielte Social-Media-Recruiting-Strategie für den ÖAMTC. Die Zielgruppe wurde direkt und authentisch angesprochen."],["h2","Ergebnis"],["p","Die Bewerbungen rauschen nur so herein. Der ÖAMTC verzichtet mittlerweile auf klassische Jobportale und Inserate. Die Qualität und Quantität der Bewerber überzeugen."]],[["h1","Was wir immer wieder hören"],["klein","Häufig gestellte Fragen"],["p","Diese Sätze und Fragen begegnen uns in fast jedem Erstgespräch. Hier ehrlich beantwortet."],["h2","01  „Das haben wir schon probiert.“"],["p","Dann haben Sie einen Social Media Kanal probiert – aber nicht die PUZZLE-Methode. Wir analysieren, warum es bisher nicht funktioniert hat und entwickeln daraus eine individuelle Strategie für Ihr Unternehmen, die Stelle und die Zielgruppe."],["h2","02  „Wir hatten schon eine Agentur.“"],["p","Vergleichen Sie nicht Agentur mit Agentur, sondern Methode mit Methode. Unsere Methode arbeitet nicht mit Copyand-Paste, sondern entwickelt für jede Stelle eine eigene, maßgeschneiderte Strategie."],["h2","03  „Social Media Recruiting hat bei uns nicht funktioniert.“"],["p","Social Media ist keine Wunderpille. Bei der PUZZLE-Methode entscheidet nicht der Kanal über Erfolg, sondern wie Zielgruppe, Botschaft, Content und gezielte Sichtbarkeit zusammenspielen."],["h2","04  „Was unterscheidet euch von anderen?“"],["p","Wir beraten nicht nur, wir übernehmen Verantwortung für die Umsetzung. Mit der PUZZLE-Methode entwickelt und realisiert unser Experten-Team eine individuelle Strategie mit einem Ziel: offene Stellen schneller mit den richtigen Menschen zu besetzen."]],[["h2","05  „Verwendet ihr KI im Recruiting?“"],["p","Ja. Die PUZZLE-Methode verbindet Recruiting-Erfahrung, Daten und KI, um Zielgruppen präziser zu verstehen und Kampagnen gezielter auszuspielen. KI unterstützt bei den Entscheidungen – unsere Experten treffen sie."],["h2","06  „Wir haben schon Employer-Branding-Videos.“"],["p","Die Frage ist nicht, ob Sie Videos haben, sondern ob Sie damit die richtigen Bewerber erreichen und sich als Arbeitgeber differenzieren. Unsere Köder-Videos sind gezielt auf Stelle, Zielgruppe und Arbeitgeber abgestimmt."],["h2","07  „Wir haben Recruiting und Marketing selbst im Haus.“"],["p","Perfekt. Unsere Dienstleistung ersetzt Ihr Team nicht, sondern unterstützt und entlastet es bei der Strategie und operativen Umsetzung. Ihr Team führt die Gespräche und stellt ein – wir sorgen dafür, dass sich die richtigen Menschen überhaupt bewerben."],["h2","Welche Lösung passt zu Ihrem Unternehmen?"],["p","Finden wir es gemeinsam heraus – unverbindlich im kostenlosen Erstgespräch. Jetzt Termin auf digispace.at vereinbaren."]],[["h1","Wir sind DigiSpace"],["p","Ein 15-köpfiges Team, eine Methode, ein Versprechen – das ist DigiSpace!"],["p","Recruiting muss zur Stelle passen, nicht andersrum. Mit diesem Anspruch sind wir 2019 gestartet und arbeiten seitdem von Klagenfurt aus für Unternehmen in der D-A-CH-Region und neun weiteren Ländern."],["p","Wir sind Strategen, Texter, Video-Coaches, Performance-Spezialisten und Kundenbetreuer. Was uns verbindet, ist die Überzeugung: Erfolg ist die einzige Option!"],["p","Dieser Report ist ein Auszug aus unserer Arbeit. Die Geschichten dahinter erzählen wir am liebsten persönlich, im Erstgespräch."],["h2","Die nächsten Schritte"],["schritte",["Termin sichern: QR-Code scannen oder digispace.at öffnen.","30-Minuten-Erstgespräch: In diesem Telefonat klären wir, ob und wie wir Ihrem Unternehmen helfen können.","Empfehlung oder Konzept: Wir sagen offen, ob wir helfen können."]]],[["h1","Jetzt Termin vereinbaren"],["p","digispace.at"]],[["h1","Bereit für planbares Recruiting?"],["p","Dann sprechen wir. 30 Minuten, ohne Kaufdruck."],["liste",["Stellen besetzen, ohne von Kampagne zu Kampagne zu springen.","Bewerbungen in Qualität statt in Masse.","Eine Strategie, die zu Ihrem Unternehmen passt."]],["h2","JETZT direkt Termin sichern"],["p","QR-Code scannen oder digispace.at öffnen"],["klein","DigiSpace GmbH · Heiligengeistplatz 4 · 9020 Klagenfurt"],["klein","+43 664 41 53 887 · office@digispace.at · digispace.at · UID ATU76750614"]]];
+
+  var textFeld = document.getElementById('text');
+  var textInnen = document.getElementById('text-innen');
+  var textGroesse = 18;
+  try { textGroesse = parseInt(localStorage.getItem('report-schrift'),10) || 18; } catch(e){}
+  textGroesse = Math.min(28, Math.max(15, textGroesse));
+
+  function schriftSetzen(g){
+    textGroesse = Math.min(28, Math.max(15, g));
+    document.getElementById('text-satz').style.setProperty('--tgroesse', textGroesse + 'px');
+    try { localStorage.setItem('report-schrift', textGroesse); } catch(e){}
+  }
+
+  var textGebaut = false;
+  function baueText(){
+    if (textGebaut) return;
+    var satz = document.getElementById('text-satz');
+    for (var i = 0; i < TEXTE.length; i++) {
+      var abschnitt = document.createElement('section');
+      abschnitt.className = 'tseite';
+      abschnitt.dataset.s = i + 1;
+      var marke = document.createElement('div');
+      marke.className = 'tmarke';
+      marke.innerHTML = '<span>Seite ' + (i + 1) + '</span>';
+      abschnitt.appendChild(marke);
+      for (var k = 0; k < TEXTE[i].length; k++) {
+        var teil = TEXTE[i][k], art = teil[0], inhalt = teil[1];
+        if (art === 'zahl') {                       // Kennzahl mit Beschriftung
+          var z = document.createElement('p'); z.className = 'zahl';
+          var b = document.createElement('b'); b.textContent = inhalt;
+          z.appendChild(b); z.appendChild(document.createTextNode(teil[2]));
+          abschnitt.appendChild(z); continue;
+        }
+        if (art === 'liste' || art === 'schritte') { // Aufzählung, nummeriert bei Schritten
+          var l = document.createElement(art === 'liste' ? 'ul' : 'ol');
+          inhalt.forEach(function(x){ var li = document.createElement('li'); li.textContent = x; l.appendChild(li); });
+          abschnitt.appendChild(l); continue;
+        }
+        if (art === 'zitat') {
+          var q = document.createElement('blockquote'); q.textContent = inhalt;
+          abschnitt.appendChild(q); continue;
+        }
+        if (art === 'gegen') {                      // Gegenüberstellung zweier Gruppen
+          var g = document.createElement('div'); g.className = 'gegen';
+          [[teil[1], teil[2], 'a'], [teil[3], teil[4], 'b']].forEach(function(s){
+            var sp = document.createElement('div'); sp.className = 'seite-' + s[2];
+            var h = document.createElement('h4'); h.textContent = s[0]; sp.appendChild(h);
+            var ul = document.createElement('ul'); s[1].forEach(function(x){ var li = document.createElement('li'); li.textContent = x; ul.appendChild(li); }); sp.appendChild(ul);
+            g.appendChild(sp);
+          });
+          abschnitt.appendChild(g); continue;
+        }
+        var el = document.createElement(art === 'h1' ? 'h2' : art === 'h2' ? 'h3' : 'p');
+        if (art === 'klein') el.className = 'klein';
+        el.textContent = inhalt;
+        abschnitt.appendChild(el);
+      }
+      satz.appendChild(abschnitt);
+    }
+    var ende = document.createElement('p');
+    ende.className = 'tende';
+    ende.textContent = 'Ende des Reports · DigiSpace GmbH';
+    satz.appendChild(ende);
+    schriftSetzen(textGroesse);
+    textGebaut = true;
+  }
+
+  function textOffen(){ return textFeld.classList.contains('auf'); }
+  var textSeite = 1;
+
+  function oeffneText(seite){
+    baueText();
+    textSeite = seite || (flip ? flip.getCurrentPageIndex() + 1 : 1);
+    textFeld.classList.add('auf');
+    requestAnimationFrame(function(){
+      textFeld.classList.add('sichtbar');
+      springeZuText(textSeite, 'auto');
+    });
+  }
+  function springeZuText(seite, art){
+    var z = document.querySelector('#text-satz .tseite[data-s="' + seite + '"]');
+    if (!z) return;
+    var vorher = textInnen.style.scrollBehavior;
+    if (art === 'auto') textInnen.style.scrollBehavior = 'auto';
+    // unter der Kopfzeile absetzen, damit die Seitenmarke sichtbar bleibt
+    var kopf = document.getElementById('text-kopf').getBoundingClientRect().height;
+    textInnen.scrollTop += z.getBoundingClientRect().top - textInnen.getBoundingClientRect().top - kopf - 14;
+    textInnen.style.scrollBehavior = vorher;
+    zeigeTextStand(seite);
+  }
+  function zeigeTextStand(seite){
+    textSeite = seite;
+    document.getElementById('text-stand').textContent = 'Seite ' + seite + ' von ' + ANZAHL;
+  }
+  function schliesseText(zurSeite){
+    textFeld.classList.remove('sichtbar');
+    setTimeout(function(){ textFeld.classList.remove('auf'); }, 260);
+    var ziel = (zurSeite || textSeite) - 1;
+    if (flip && ziel !== flip.getCurrentPageIndex()) { ladeUmfeld(ziel); flip.turnToPage(ziel); }
+  }
+
+  /* Beim Scrollen mitzählen, auf welcher Seite man gerade ist */
+  var textTakt = null;
+  textInnen.addEventListener('scroll', function(){
+    if (textTakt) return;
+    textTakt = setTimeout(function(){
+      textTakt = null;
+      var kante = textInnen.getBoundingClientRect().top + 90;
+      var alle = document.querySelectorAll('#text-satz .tseite');
+      var jetzt = 1;
+      for (var i = 0; i < alle.length; i++) {
+        if (alle[i].getBoundingClientRect().top <= kante) jetzt = parseInt(alle[i].dataset.s, 10);
+      }
+      if (jetzt !== textSeite) zeigeTextStand(jetzt);
+    }, 120);
+  }, {passive:true});
+
+  document.getElementById('btn-text').addEventListener('click', function(){ oeffneText(); });
+  document.getElementById('text-zu').addEventListener('click', function(){ schliesseText(); });
+  document.getElementById('text-groesser').addEventListener('click', function(){ schriftSetzen(textGroesse + 2); });
+  document.getElementById('text-kleiner').addEventListener('click', function(){ schriftSetzen(textGroesse - 2); });
+  document.getElementById('text-original').addEventListener('click', function(){
+    var s = textSeite;
+    schliesseText(s);
+    setTimeout(function(){ oeffneLupe(s); }, 300);
+  });
+
+  /* ---------- Hinweis und automatisches Ausblenden ---------- */
+  function zeigeTipp(){
+    var t = document.getElementById('tipp');
+    var schonGesehen = false;
+    try { schonGesehen = localStorage.getItem('report-tipp') === '1'; } catch(e){}
+    if (schonGesehen) return;
+    t.classList.add('auf');
+    setTimeout(function(){ t.classList.remove('auf'); }, 5200);
+    try { localStorage.setItem('report-tipp','1'); } catch(e){}
+  }
+
+  var ruhe;
+  function wach(){
+    document.getElementById('kopf').classList.remove('versteckt');
+    document.getElementById('fuss').classList.remove('versteckt');
+    clearTimeout(ruhe);
+    ruhe = setTimeout(function(){
+      if (leiste.classList.contains('auf') || lupeOffen()) return;
+      document.getElementById('kopf').classList.add('versteckt');
+      document.getElementById('fuss').classList.add('versteckt');
+    }, 4200);
+  }
+  ['pointermove','pointerdown','keydown','touchstart','wheel'].forEach(function(ev){
+    document.addEventListener(ev, wach, {passive:true});
+  });
+  wach();
+})();
+</script>
+</body>
+</html>
